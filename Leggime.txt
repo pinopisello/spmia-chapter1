@@ -1,0 +1,43 @@
+
+1) Creazione Docker image
+
+mvn clean package docker:build
+DEVE ESSERE ESEGUITO DENTRO UNA DOCKET CLI!!
+
+Costruisce una immagine docker [name=pinopisello/tmx-simple-service;tag=chapter1 ] che puo girare in un docker container.
+In target/docker :
+
+				simple-service-0.0.1-SNAPSHOT.jar
+				Dockerfile
+				run.sh
+				
+Vedi https://github.com/spotify/docker-maven-plugin
+
+2)Lancio Docker image
+
+cd /spmia-chapter1/docker-compose
+docker-compose -f common/docker-compose.yml up
+
+L' ip sotto e' quello della docker machine : docker-machine ip
+
+Dovrei ricevere dati da : http://192.168.99.100:8080/hello/firstName/lastName
+
+3)Lanciare app con :  ￼￼￼mvn spring-boot:run
+
+Questo invoca Application.main() come indicato da simple-service-0.0.1-SNAPSHOT/META-INF/Manifest.mf
+
+  Start-Class: com.thoughtmechanix.simpleservice.Application
+  Main-Class: org.springframework.boot.loader.JarLauncher
+
+
+
+Cosi si lancia il service FUORI da docker-image!!
+
+http://127.0.0.1:8080/hello/firstName/lastName
+
+Per debuggare usa  <jvmArguments> in <artifactId>spring-boot-maven-plugin</artifactId>
+
+
+
+mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true 
+
