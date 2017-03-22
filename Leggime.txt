@@ -1,43 +1,102 @@
+1) Creazione eseguibile
 
-1) Creazione Docker image
+mvn clean package => genera target/simple-service-0.0.1-SNAPSHOT.jar con
 
-mvn clean package docker:build
-DEVE ESSERE ESEGUITO DENTRO UNA DOCKET CLI!!
+BOOT-INF/classes  				   =>compilato di src/main/java
+BOOT-INF/lib     				   =>tutte le dependencies maven
+org/springframework/boot/loader    =>contiene JarLauncher    [sono classi contenute in spring-boot-loader-tools/META-INF/loader/spring-boot-loader.zip]
+META-INF/MANIFEST.MF               =>contiene Main-Class: org.springframework.boot.loader.JarLauncher
+										      Start-Class: com.thoughtmechanix.simpleservice.Application
 
-Costruisce una immagine docker [name=pinopisello/tmx-simple-service;tag=chapter1 ] che puo girare in un docker container.
-In target/docker :
+spring-boot-maven-plugin "RepackageMojo"
 
-				simple-service-0.0.1-SNAPSHOT.jar
-				Dockerfile
-				run.sh
+L aggiunta di BOOT-INF,org/springframework/boot/loader,etc e' determinata dalla presenza spring-boot-maven-plugin nel pom.
+http://docs.spring.io/spring-boot/docs/1.5.2.RELEASE/maven-plugin/	
+In particolare org.springframework.boot.maven.RepackageMojo e' autoregistato fase "package" .
+Prende il normale artifact simple-service-0.0.1-SNAPSHOT.jar, lo rinomina simple-service-0.0.1-SNAPSHOT.jar.original
+e lo ricrea aggiungendo BOOT-INF,org/springframework/boot/loader cosicche' il microservice sia lanciabile standalone.
+	
+
+
+2)Lancio eseguibile	come jar 
+Per eseguire il MC basta lanciare:
+
+java -jar simple-service-0.0.1-SNAPSHOT.jar
+
+Accedi al service: http://127.0.0.1:8080/hello/firstName/lastNames
+
+
+Per debuggare lancia :
+
+a)java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -jar simple-service-0.0.1-SNAPSHOT.jar
+
+b)lancia eclipse debugger verso porta 8000
+
+La classe che viene invocata x startup e' org.springframework.boot.loader.JarLauncher.java come indicato nel META-INF/MANIFEST.MF
+
+oppure via mvn:
+
+a) mvn spring-boot:run 
+
+b)lancia eclipse debugger verso porta 8000
+
+Si debugga cosi a partire da com.thoughtmechanix.simpleservice.Application.java
+
+
+In questo caso RunMojo.runWithForkedJvm() crea un processo java che esegue com.thoughtmechanix.simpleservice.Application.main() quindi nessuna differenza con lancio da java -jar. 
+Se si vuole debuggare da org.springframework.boot.maven.RunMojo.java, occorre settare un maven debug in eclipse con targer goal "spring-boot:run".
+Tale classe e' aggiunta alla configuration del spring-boot-maven-plugin da .m2/repository/org/springframework/boot/spring-boot-starter-parent/1.4.4.RELEASE/spring-boot-starter-parent-1.4.4.RELEASE.pom
+<configuration>
+	<mainClass>${start-class}</mainClass>
+</configuration>
+ ed e' risolta in com.thoughtmechanix.simpleservice.Application.java da qualche parte org.apache.maven.model.interpolation.StringSearchModelInterpolator
+Provato a debuggare ma ho problemi con conditional breakpoints.
+ 
+
+
+
+3)creazione Docker Image
+
+mvn docker:build => genera docker image [Vedi https://github.com/spotify/docker-maven-plugin]
+
+DEVE ESSERE ESEGUITO DENTRO UNA DOCKET CLI
+
+Dipende da maven-resources-plugin per copiare  src/main/docker in /target/dockerfile !!
+
+Input: /target/dockerfile/Dockerfile, /target/dockerfile/run.sh, /target/simple-service-0.0.1-SNAPSHOT.jar
+Output:
+
+mvn docker:build  esegue:
+
+1)copia contenuto di /target/dockerfile (Dockerfile e run.sh) in dockerDirectory (target/dockerfile)
+2)include contenuto di <resources> /target/simple-service-0.0.1-SNAPSHOT.jar al momento esecuzione Dockerfile
+3)esegue /target/dockerfile/Dockerfile che crea image 
+
+alla fine esecuzione /target/dockerfile/Dockerfile crea image pinopisello/tmx-simple-service:chapter1 nella docker-machine
+spefifcata nel pom con le properties:
+
+        <docker.image.name>pinopisello/tmx-simple-service</docker.image.name>
+		<docker.image.tag>chapter1</docker.image.tag>
+		<dockerHost>https://192.168.99.100:2376</dockerHost>
+		<dockerTlsVerify>1</dockerTlsVerify>
+		<dockerCertPath>/Users/glocon/.docker/machine/machines/default</dockerCertPath>
+
 				
-Vedi https://github.com/spotify/docker-maven-plugin
 
-2)Lancio Docker image
+4)Lancio Docker Container dalla image  pinopisello/tmx-simple-service:chapter1
 
-cd /spmia-chapter1/docker-compose
-docker-compose -f common/docker-compose.yml up
+Opzione 1 Docker run:
 
-L' ip sotto e' quello della docker machine : docker-machine ip
+	docker run -p 8080:8080 --name spmia-chapter1_container pinopisello/tmx-simple-service:chapter1
 
-Dovrei ricevere dati da : http://192.168.99.100:8080/hello/firstName/lastName
+Opzione 1 Docker Compose:
 
-3)Lanciare app con :  ￼￼￼mvn spring-boot:run
+	cd /Users/glocon/Miei/local_git/nike_repo/Spring_Microservices_in_Action/spmia-chapter1/docker-compose/common
+	docker-compose -f docker-compose.yml up
+	
 
-Questo invoca Application.main() come indicato da simple-service-0.0.1-SNAPSHOT/META-INF/Manifest.mf
-
-  Start-Class: com.thoughtmechanix.simpleservice.Application
-  Main-Class: org.springframework.boot.loader.JarLauncher
+Testa con: http://192.168.99.100:8080/hello/firstName/lastName
 
 
 
-Cosi si lancia il service FUORI da docker-image!!
-
-http://127.0.0.1:8080/hello/firstName/lastName
-
-Per debuggare usa  <jvmArguments> in <artifactId>spring-boot-maven-plugin</artifactId>
-
-
-
-mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true 
 

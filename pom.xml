@@ -12,72 +12,64 @@
   <name>Simple Service</name>
   <description>Simple Service</description>
 
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.4.4.RELEASE</version>
-    <relativePath/>
-  </parent>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-  </dependencies>
+			<!-- spring-boot-maven-plugin esegue quando invoco mvn spring-boot:run 
+				anche responsabile repackaging dell app con aggiunta BOOT-INF/classes,BOOT-INF/lib 
+				,org/springframework/boot/loader per esecuzione standalone http://docs.spring.io/spring-boot/docs/current/maven-plugin/usage.html -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!-- Per debuggare da eclipse -->
+					<jvmArguments> -Xdebug
+						-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8001 </jvmArguments>
+					<fork>true</fork>
+				</configuration>
+			</plugin>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.8</java.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <start-class>com.thoughtmechanix.simpleservice.Application</start-class>
-    <docker.image.name>johncarnell/tmx-simple-service</docker.image.name>
-    <docker.image.tag>chapter1</docker.image.tag>
-  </properties>
+			<!-- copia src/main/docker/Dockerfile e src/main/docker/run.sh in /target/dockerfile 
+			     sostituendo @project.build.finalName@ in simple-service-0.0.1-SNAPSHOT.jar in /target/dockerfile/Dockerfile 
+			-->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/dockerfile</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/docker</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <!-- here the phase you need -->
-            <phase>validate</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/dockerfile</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/docker</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>0.4.10</version>
-        <configuration>
-          <imageName>${docker.image.name}:${docker.image.tag}</imageName>
-          <dockerDirectory>${basedir}/target/dockerfile</dockerDirectory>
-          <resources>
-            <resource>
-              <targetPath>/</targetPath>
-              <directory>${project.build.directory}</directory>
-              <include>${project.build.finalName}.jar</include>
-            </resource>
-          </resources>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+			<!-- Genera doker image : mvn docker:build https://github.com/spotify/docker-maven-plugin 
+				 Input: target/dockerfile/Dockerfile Output:pinopisello/tmx-simple-service 
+				 in usando Non agganciata alcuna fase.Occorre eseguire: mvn docker:build -->
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.10</version>
+				<configuration>
+					<imageName>${docker.image.name}:${docker.image.tag}</imageName>
+					<dockerDirectory>${basedir}/target/dockerfile</dockerDirectory>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
