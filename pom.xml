@@ -25,20 +25,13 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- Contiene RepackageMojo che aggiunge BOOT-INF,org/springframework/boot/loader,etc 
-			nel jar finale -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-maven-plugin</artifactId>
-			<version>1.4.4.RELEASE</version>
-		</dependency>
 
-		<!-- Necessario x debuggare classi come org.springframework.boot.loader.Launcher -->
+		<!-- Necessario x debuggare classi come org.springframework.boot.loader.Launcher 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader</artifactId>
 		</dependency>
-
+        -->
 	</dependencies>
 
 	<properties>
@@ -58,15 +51,19 @@
 
 			<!-- spring-boot-maven-plugin esegue quando invoco mvn spring-boot:run 
 				anche responsabile repackaging dell app con aggiunta BOOT-INF/classes,BOOT-INF/lib 
-				,org/springframework/boot/loader per esecuzione standalone http://docs.spring.io/spring-boot/docs/current/maven-plugin/usage.html -->
+				,org/springframework/boot/loader per esecuzione standalone http://docs.spring.io/spring-boot/docs/current/maven-plugin/usage.html 
+				
+				Contiene RepackageMojo che aggiunge BOOT-INF,org/springframework/boot/loader,etc 
+			   nel jar finale
+				-->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!-- Per debuggare da eclipse -->
+					<!-- Per debuggare da eclipse
 					<jvmArguments> -Xdebug
 						-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8001 </jvmArguments>
-					<fork>true</fork>
+					<fork>true</fork> -->
 				</configuration>
 			</plugin>
 

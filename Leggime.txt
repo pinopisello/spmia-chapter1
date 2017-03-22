@@ -1,3 +1,11 @@
+Implementazione di un microservice com.thoughtmechanix.simpleservice.Application 
+che e' allo stesso tempo bootstrap,controller,mapper:
+
+@SpringBootApplication  => dove il bosstrap avviene
+@RestController         => e' spring controller
+@RequestMapping         =>e' url path mapper
+
+
 1) Creazione eseguibile
 
 mvn clean package => genera target/simple-service-0.0.1-SNAPSHOT.jar con
