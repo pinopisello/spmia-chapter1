@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value="hello")
 //@EnableCircuitBreaker      //Enable uso Hystrix-Ribbon
 //@EnableEurekaClient        //Registra service presso Eureka service discovery agent e indica che il service
-                           //usera' Service discovery to “lookup” the location of remote services
+                             //usera' Service discovery to “lookup” the location of remote services
 public class Application {
 
     public static void main(String[] args) {
