@@ -38,15 +38,15 @@ Per debuggare lancia :
 
 a)java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -jar simple-service-0.0.1-SNAPSHOT.jar
 
-b)lancia eclipse debugger verso porta 8000
+b)lancia eclipse remote debugger verso porta 8000
 
 La classe che viene invocata x startup e' org.springframework.boot.loader.JarLauncher.java come indicato nel META-INF/MANIFEST.MF
 
-oppure via mvn:
+oppure via mvn:(configura spring-boot-maven-plugin con <jvmArguments> -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8001 </jvmArguments>)
 
 a) mvn spring-boot:run 
 
-b)lancia eclipse debugger verso porta 8000
+b)lancia eclipse remote debugger verso porta 8001
 
 Si debugga cosi a partire da com.thoughtmechanix.simpleservice.Application.java
 
