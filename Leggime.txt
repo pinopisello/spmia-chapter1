@@ -57,8 +57,8 @@ Tale classe e' aggiunta alla configuration del spring-boot-maven-plugin da .m2/r
 <configuration>
 	<mainClass>${start-class}</mainClass>
 </configuration>
- ed e' risolta in com.thoughtmechanix.simpleservice.Application.java da qualche parte org.apache.maven.model.interpolation.StringSearchModelInterpolator
-Provato a debuggare ma ho problemi con conditional breakpoints.
+ ed e' risolta in com.thoughtmechanix.simpleservice.Application.java  grazie a  <start-class>com.thoughtmechanix.confsvr.ConfigServerApplication</start-class>  nel pom.xml
+
  
 
 

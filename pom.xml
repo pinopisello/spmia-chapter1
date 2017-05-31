@@ -38,7 +38,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<start-class>com.thoughtmechanix.simpleservice.Application</start-class>
+	    <start-class>com.thoughtmechanix.simpleservice.Application</start-class>
 		<docker.image.name>pinopisello/tmx-simple-service</docker.image.name>
 		<docker.image.tag>chapter1</docker.image.tag>
 		<dockerHost>https://192.168.99.100:2376</dockerHost>
@@ -54,8 +54,8 @@
 				,org/springframework/boot/loader per esecuzione standalone http://docs.spring.io/spring-boot/docs/current/maven-plugin/usage.html 
 				
 				Contiene RepackageMojo che aggiunge BOOT-INF,org/springframework/boot/loader,etc 
-			   nel jar finale
-				-->
+			    nel jar finale
+			-->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -93,7 +93,8 @@
 			</plugin>
 
 			<!-- Genera doker image : mvn docker:build https://github.com/spotify/docker-maven-plugin 
-				 Input: target/dockerfile/Dockerfile Output:pinopisello/tmx-simple-service 
+				 Input: target/dockerfile/Dockerfile
+				 Output:pinopisello/tmx-simple-service 
 				 in usando Non agganciata alcuna fase.Occorre eseguire: mvn docker:build -->
 			<plugin>
 				<groupId>com.spotify</groupId>
